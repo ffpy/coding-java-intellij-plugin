@@ -1,0 +1,71 @@
+plugins {
+    id 'java'
+    id 'org.jetbrains.intellij' version '0.4.9'
+}
+
+def ideaVersionExternalDefinition = System.getenv("IDEA_VERSION")
+def ideaVersion = ideaVersionExternalDefinition ? ideaVersionExternalDefinition : ideaVersion
+
+group = pluginGroup
+version = pluginVersion
+
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
+
+compileJava {
+    options.compilerArgs << '-parameters'
+}
+
+compileTestJava {
+    options.compilerArgs << '-parameters'
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+repositories {
+    mavenCentral()
+}
+
+intellij {
+    version ideaVersion
+    println "Building for IntelliJ version: ${version}"
+
+    pluginName pluginName
+    updateSinceUntilBuild true
+    sameSinceUntilBuild false
+    sandboxDirectory = "${rootProject.projectDir}/idea-sandbox/idea-${ideaVersion}"
+
+    plugins 'java'
+}
+
+patchPluginXml {
+    version pluginVersion
+    pluginDescription(file(descriptionFile).text)
+    changeNotes(file(changesFile).text)
+}
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+
+    // lib
+    compile fileTree(dir: 'lib', includes: ['*jar'])
+
+    // lombok
+    compileOnly "org.projectlombok:lombok:1.18.4"
+    annotationProcessor "org.projectlombok:lombok:1.18.4"
+    testCompileOnly "org.projectlombok:lombok:1.18.4"
+    testAnnotationProcessor "org.projectlombok:lombok:1.18.4"
+
+    // logback
+    compile group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.3'
+
+    // commons
+    compile group: 'commons-beanutils', name: 'commons-beanutils', version: '1.9.3'
+    compile group: 'commons-codec', name: 'commons-codec', version: '1.13'
+
+    // json
+    compile group: 'org.json', name: 'json', version: '20190722'
+
+}

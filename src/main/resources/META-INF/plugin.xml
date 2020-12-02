@@ -1,0 +1,57 @@
+<idea-plugin>
+    <id>org.ffpy.plugin</id>
+    <name>coding</name>
+    <vendor email="q1411603774@163.com" url="">ffpy</vendor>
+
+    <description><![CDATA[ Description will be added by gradle build ]]></description>
+
+    <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
+         on how to target different products -->
+    <!-- uncomment to enable plugin in all products
+    <depends>com.intellij.modules.lang</depends>
+    -->
+    <depends>com.intellij.modules.java</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <projectConfigurable instance="org.ffpy.plugin.coding.configurable.ProjectConfigurable"/>
+
+        <projectService serviceInterface="org.ffpy.plugin.coding.service.SettingService"
+                        serviceImplementation="org.ffpy.plugin.coding.service.SettingServiceImpl"/>
+
+        <completion.confidence id="org.ffpy.plugin.coding.completion.MyCompletionConfidence"
+                               implementationClass="org.ffpy.plugin.coding.completion.MyCompletionConfidence"
+                               order="first" language="JAVA"/>
+    </extensions>
+
+    <application-components>
+        <component>
+            <interface-class>org.ffpy.plugin.coding.component.AppComponent</interface-class>
+            <implementation-class>org.ffpy.plugin.coding.component.AppComponentImpl</implementation-class>
+        </component>
+    </application-components>
+
+    <actions>
+        <group id="Coding.Menu"
+               text="Coding">
+
+            <add-to-group group-id="MainMenu" anchor="last"/>
+
+
+
+        </group>
+
+        <group id="Coding.Popup"
+               text="Coding"
+               popup="true">
+
+            <add-to-group group-id="EditorPopupMenu" anchor="first"/>
+
+
+
+        </group>
+
+    </actions>
+
+    <change-notes><![CDATA[ Change notes will be filled by gradle build ]]></change-notes>
+
+</idea-plugin>
