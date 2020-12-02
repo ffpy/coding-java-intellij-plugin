@@ -1,6 +1,8 @@
 plugins {
     id 'java'
     id 'org.jetbrains.intellij' version '0.4.9'
+//    id 'org.springframework.boot' version '2.4.0'
+//    id 'io.spring.dependency-management' version '1.0.10.RELEASE'
 }
 
 def ideaVersionExternalDefinition = System.getenv("IDEA_VERSION")
@@ -24,7 +26,14 @@ tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
 }
 
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
 repositories {
+    maven { url 'https://maven.aliyun.com/repository/public/' }
     mavenCentral()
 }
 
@@ -46,26 +55,32 @@ patchPluginXml {
     changeNotes(file(changesFile).text)
 }
 
+ext {
+    springBootVersion = '2.3.5.RELEASE'
+    lombokVersion = '1.18.4'
+}
+
 dependencies {
-    testCompile group: 'junit', name: 'junit', version: '4.12'
-
     // lib
-    compile fileTree(dir: 'lib', includes: ['*jar'])
+    compile fileTree(dir: 'lib', includes: ['*.jar'])
 
-    // lombok
-    compileOnly "org.projectlombok:lombok:1.18.4"
-    annotationProcessor "org.projectlombok:lombok:1.18.4"
-    testCompileOnly "org.projectlombok:lombok:1.18.4"
-    testAnnotationProcessor "org.projectlombok:lombok:1.18.4"
+    // Spring Boot
+    implementation "org.springframework.boot:spring-boot-starter:${springBootVersion}"
 
-    // logback
-    compile group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.3'
+    // Lombok
+    compileOnly "org.projectlombok:lombok:${lombokVersion}"
+    annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+    testCompileOnly "org.projectlombok:lombok:${lombokVersion}"
+    testAnnotationProcessor "org.projectlombok:lombok:${lombokVersion}"
 
-    // commons
-    compile group: 'commons-beanutils', name: 'commons-beanutils', version: '1.9.3'
-    compile group: 'commons-codec', name: 'commons-codec', version: '1.13'
+    // Commons
+    implementation group: 'commons-beanutils', name: 'commons-beanutils', version: '1.9.3'
+    implementation group: 'commons-codec', name: 'commons-codec', version: '1.13'
 
-    // json
-    compile group: 'org.json', name: 'json', version: '20190722'
+    // Json
+    implementation group: 'org.json', name: 'json', version: '20190722'
 
+    // Test
+    testImplementation group: 'junit', name: 'junit', version: '4.12'
+    testImplementation "org.springframework.boot:spring-boot-starter-test:${springBootVersion}"
 }
