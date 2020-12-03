@@ -48,14 +48,15 @@ public abstract class BaseReplaceAction extends BaseAnAction {
 
     @Override
     public void update(@NotNull AnActionEvent e) {
-        boolean hasProject = e.getProject() != null;
+        e.getPresentation().setEnabled(e.getProject() != null && hasSelectedText(e));
+    }
 
-        boolean hasSelectedText = Optional.ofNullable(e.getData(LangDataKeys.EDITOR))
+    @NotNull
+    private Boolean hasSelectedText(@NotNull AnActionEvent e) {
+        return Optional.ofNullable(e.getData(LangDataKeys.EDITOR))
                 .map(Editor::getSelectionModel)
                 .map(SelectionModel::getSelectedText)
                 .map(StringUtils::isNotEmpty)
                 .orElse(false);
-
-        e.getPresentation().setEnabled(hasProject && hasSelectedText);
     }
 }

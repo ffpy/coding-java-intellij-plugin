@@ -36,7 +36,9 @@
 
             <add-to-group group-id="MainMenu" anchor="last"/>
 
-
+            <action id="org.ffpy.plugin.coding.action.ApiModelAutoPositionAction"
+                    class="org.ffpy.plugin.coding.action.ApiModelAutoPositionAction"
+                    text="ApiModel自动编号"/>
 
         </group>
 

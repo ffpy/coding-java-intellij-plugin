@@ -1,11 +1,13 @@
 package org.ffpy.plugin.coding.util;
 
+import cn.hutool.core.util.StrUtil;
 import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationListener;
 import com.intellij.notification.NotificationType;
 import com.intellij.notification.Notifications;
 import org.ffpy.plugin.coding.constant.Constant;
 
+import javax.annotation.Nullable;
 import java.util.Objects;
 
 /**
@@ -23,21 +25,21 @@ public class NotificationHelper {
     private NotificationType type;
     private NotificationListener listener;
 
-    public static NotificationHelper error(String content, Object... param) {
+    public static NotificationHelper error(@Nullable String content, Object... param) {
         return new NotificationHelper()
                 .type(NotificationType.ERROR)
                 .title(TITLE_ERROR)
                 .contentWithParam(content, param);
     }
 
-    public static NotificationHelper warn(String content, Object... param) {
+    public static NotificationHelper warn(@Nullable String content, Object... param) {
         return new NotificationHelper()
                 .type(NotificationType.WARNING)
                 .title(TITLE_WARN)
                 .contentWithParam(content, param);
     }
 
-    public static NotificationHelper info(String content, Object... param) {
+    public static NotificationHelper info(@Nullable String content, Object... param) {
         return new NotificationHelper()
                 .type(NotificationType.INFORMATION)
                 .title(TITLE_INFO)
@@ -61,8 +63,8 @@ public class NotificationHelper {
      * @param content 内容
      * @return this
      */
-    public NotificationHelper content(String content) {
-        this.content = Objects.requireNonNull(content);
+    public NotificationHelper content(@Nullable String content) {
+        this.content = content == null ? "" : content;
         return this;
     }
 
@@ -72,8 +74,8 @@ public class NotificationHelper {
      * @param content 内容
      * @return this
      */
-    public NotificationHelper contentWithParam(String content, Object... param) {
-        this.content = String.format(Objects.requireNonNull(content), param);
+    public NotificationHelper contentWithParam(@Nullable String content, Object... param) {
+        this.content = StrUtil.format(content == null ? "" : content, param);
         return this;
     }
 
