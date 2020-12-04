@@ -130,6 +130,7 @@ public class PsiUtils {
     }
 
     public static Stream<PsiMethod> getAllSetter(PsiClass psiClass) {
+        if (psiClass == null) return Stream.empty();
         return Arrays.stream(psiClass.getAllMethods())
                 .filter(method -> {
                     PsiModifierList modifierList = method.getModifierList();
@@ -153,6 +154,7 @@ public class PsiUtils {
     }
 
     public static Stream<PsiMethod> getAllGetter(PsiClass psiClass) {
+        if (psiClass == null) return Stream.empty();
         return Arrays.stream(psiClass.getAllMethods())
                 .filter(method -> {
                     PsiModifierList modifierList = method.getModifierList();

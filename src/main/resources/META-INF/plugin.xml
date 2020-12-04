@@ -36,9 +36,17 @@
 
             <add-to-group group-id="MainMenu" anchor="last"/>
 
-            <action id="org.ffpy.plugin.coding.action.ApiModelAutoPositionAction"
-                    class="org.ffpy.plugin.coding.action.ApiModelAutoPositionAction"
+            <action id="org.ffpy.plugin.coding.action.menu.ApiModelAutoPositionAction"
+                    class="org.ffpy.plugin.coding.action.menu.ApiModelAutoPositionAction"
                     text="ApiModel自动编号"/>
+
+            <action id="org.ffpy.plugin.coding.action.menu.GenerateGetterCallerAction"
+                    class="org.ffpy.plugin.coding.action.menu.GenerateGetterCallerAction"
+                    text="生成Getter调用"/>
+
+            <action id="org.ffpy.plugin.coding.action.menu.GenerateSetterCallerAction"
+                    class="org.ffpy.plugin.coding.action.menu.GenerateSetterCallerAction"
+                    text="生成Setter调用"/>
 
         </group>
 

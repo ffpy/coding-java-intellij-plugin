@@ -12,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
 
-public abstract class BaseReplaceAction extends BaseAnAction {
+public abstract class BaseReplaceAction extends BaseAction {
 
     /**
      * @param e AnActionEvent
@@ -24,11 +24,11 @@ public abstract class BaseReplaceAction extends BaseAnAction {
     protected abstract String replace(AnActionEvent e, String text) throws Exception;
 
     @Override
-    protected void action(AnActionEvent e) throws Exception {
-        Project project = e.getProject();
+    public void action() throws Exception {
+        Project project = env.getProject();
         if (project == null) return;
 
-        Editor editor = e.getData(LangDataKeys.EDITOR);
+        Editor editor = env.getEditor().orElse(null);
         if (editor == null) return;
 
         SelectionModel selectionModel = editor.getSelectionModel();
@@ -39,7 +39,7 @@ public abstract class BaseReplaceAction extends BaseAnAction {
         int start = selectionModel.getSelectionStart();
         int end = selectionModel.getSelectionEnd();
 
-        String newText = replace(e, selectedText);
+        String newText = replace(env.getEvent(), selectedText);
         if (newText == null) return;
 
         WriteCommandAction.runWriteCommandAction(project,

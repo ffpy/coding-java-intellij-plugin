@@ -30,7 +30,7 @@ import java.util.Map;
 import java.util.Optional;
 
 @RequiredArgsConstructor
-public class EventEnv {
+public class ActionEnv {
 
     /** 当前Event */
     @Getter
@@ -107,15 +107,15 @@ public class EventEnv {
     /**
      * 获取编辑器实例
      */
-    public Editor getEditor() {
-        return event.getData(LangDataKeys.HOST_EDITOR);
+    public Optional<Editor> getEditor() {
+        return Optional.ofNullable(event.getData(LangDataKeys.HOST_EDITOR));
     }
 
     /**
      * 获取当前光标所指元素
      */
-    public PsiElement getCurElement() {
-        return event.getData(LangDataKeys.PSI_ELEMENT);
+    public Optional<PsiElement> getCurElement() {
+        return Optional.ofNullable(event.getData(LangDataKeys.PSI_ELEMENT));
     }
 
     /**
@@ -165,20 +165,20 @@ public class EventEnv {
     /**
      * 根据文件名查找文件，只获取第一个文件
      */
-    public VirtualFile getVirtualFilesByName(String name) {
+    public Optional<VirtualFile> getVirtualFilesByName(String name) {
         return IndexUtils.getVirtualFilesByName(getProject(), name)
-                .stream().findFirst().orElse(null);
+                .stream().findFirst();
     }
 
 
     /**
      * 根据文件名查找文件，只获取第一个
      */
-    public PsiFile getFilesByName(String name) {
+    public Optional<PsiFile> getFilesByName(String name) {
         PsiFile[] files = IndexUtils.getFilesByName(getProject(), name);
         if (files != null && files.length > 0) {
-            return files[0];
+            return Optional.ofNullable(files[0]);
         }
-        return null;
+        return Optional.empty();
     }
 }

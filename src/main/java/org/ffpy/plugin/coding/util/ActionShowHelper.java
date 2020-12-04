@@ -2,6 +2,7 @@ package org.ffpy.plugin.coding.util;
 
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.LangDataKeys;
+import com.intellij.openapi.project.DumbService;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
@@ -16,14 +17,25 @@ import java.util.function.Supplier;
 public class ActionShowHelper {
 
     private final AnActionEvent event;
-    private boolean enable = true;
+    private boolean enable;
 
     public static ActionShowHelper of(AnActionEvent event) {
-        return new ActionShowHelper(Objects.requireNonNull(event));
+        Objects.requireNonNull(event);
+        // dumb状态下意味着IDEA正在更新索引，很多功能都不能用
+        boolean enable = Optional.ofNullable(event.getProject())
+                .map(it -> !DumbService.isDumb(it))
+                .orElse(false);
+        return new ActionShowHelper(event, enable);
     }
 
-    private ActionShowHelper(AnActionEvent event) {
+    public static ActionShowHelper ofDumb(AnActionEvent event) {
+        Objects.requireNonNull(event);
+        return new ActionShowHelper(event, true);
+    }
+
+    private ActionShowHelper(AnActionEvent event, boolean enable) {
         this.event = event;
+        this.enable = enable;
     }
 
     public ActionShowHelper fileNameMatch(String pattern) {

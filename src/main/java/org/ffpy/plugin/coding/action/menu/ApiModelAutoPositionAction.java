@@ -1,31 +1,26 @@
-package org.ffpy.plugin.coding.action;
+package org.ffpy.plugin.coding.action.menu;
 
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.psi.PsiAnnotation;
 import com.intellij.psi.PsiExpression;
 import com.intellij.psi.PsiField;
-import org.ffpy.plugin.coding.EventEnv;
+import org.ffpy.plugin.coding.action.BaseAction;
+import org.ffpy.plugin.coding.action.ActionService;
 import org.ffpy.plugin.coding.constant.AnnotationNames;
 import org.ffpy.plugin.coding.util.ActionShowHelper;
 import org.ffpy.plugin.coding.util.PsiUtils;
-import org.ffpy.plugin.coding.util.SpringContextUtils;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.config.ConfigurableBeanFactory;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 
 import java.util.Objects;
 
-@Component
-@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-public class ApiModelAutoPositionAction extends BaseAnAction {
+/**
+ * ApiModel自动编号
+ */
+@ActionService
+public class ApiModelAutoPositionAction extends BaseAction {
 
     private static final String POSITION_ATTR_NAME = "position";
     private static final String HIDDEN_ATTR_NAME = "hidden";
-
-    @Autowired
-    private EventEnv env;
 
     @Override
     public void action() throws Exception {
@@ -51,7 +46,6 @@ public class ApiModelAutoPositionAction extends BaseAnAction {
     @Override
     public void update(@NotNull AnActionEvent e) {
         ActionShowHelper.of(e)
-                .and(this::isDumbAware)
                 .classWithAnnotation(AnnotationNames.API_MODEL)
                 .update();
     }
