@@ -4,7 +4,7 @@ import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.DumbAware;
 import lombok.extern.slf4j.Slf4j;
-import org.ffpy.plugin.coding.ActionEnv;
+import org.ffpy.plugin.coding.action.env.ActionEnv;
 import org.ffpy.plugin.coding.config.ActionEvnConfig;
 import org.ffpy.plugin.coding.util.NotificationHelper;
 import org.ffpy.plugin.coding.util.SpringContextUtils;

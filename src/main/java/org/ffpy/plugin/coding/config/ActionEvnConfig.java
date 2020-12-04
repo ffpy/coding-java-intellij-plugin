@@ -1,7 +1,9 @@
 package org.ffpy.plugin.coding.config;
 
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import org.ffpy.plugin.coding.ActionEnv;
+import org.ffpy.plugin.coding.action.env.ActionEnv;
+import org.ffpy.plugin.coding.action.env.ActionEnvImpl;
+import org.ffpy.plugin.coding.action.env.ActionEnvProxy;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -29,6 +31,6 @@ public class ActionEvnConfig {
         if (event == null) {
             throw new RuntimeException("event not found.");
         }
-        return new ActionEnv(event);
+        return ActionEnvProxy.getInstance(new ActionEnvImpl(event));
     }
 }

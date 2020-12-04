@@ -72,7 +72,9 @@
 
             <add-to-group group-id="EditorPopupMenu" anchor="first"/>
 
-
+            <action id="org.ffpy.plugin.coding.action.generate.AddMappingIgnoreAction"
+                    class="org.ffpy.plugin.coding.action.generate.AddMappingIgnoreAction"
+                    text="添加ignore"/>
 
         </group>
 
