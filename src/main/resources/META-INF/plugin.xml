@@ -52,6 +52,18 @@
                     class="org.ffpy.plugin.coding.action.menu.FormatSqlAction"
                     text="格式化SQL脚本"/>
 
+            <action id="org.ffpy.plugin.coding.action.menu.CaseFormatAction"
+                    class="org.ffpy.plugin.coding.action.menu.CaseFormatAction"
+                    text="驼峰-下划线互转">
+                <keyboard-shortcut keymap="$default" first-keystroke="shift alt MINUS"/>
+            </action>
+
+            <action id="org.ffpy.plugin.coding.action.menu.WrapBackquoteAction"
+                    class="org.ffpy.plugin.coding.action.menu.WrapBackquoteAction"
+                    text="SQL字段用反引号包裹">
+                <keyboard-shortcut keymap="$default" first-keystroke="shift alt BACK_QUOTE"/>
+            </action>
+
         </group>
 
         <group id="Coding.Popup"
