@@ -48,6 +48,10 @@
                     class="org.ffpy.plugin.coding.action.menu.GenerateSetterCallerAction"
                     text="生成Setter调用"/>
 
+            <action id="org.ffpy.plugin.coding.action.menu.FormatSqlAction"
+                    class="org.ffpy.plugin.coding.action.menu.FormatSqlAction"
+                    text="格式化SQL脚本"/>
+
         </group>
 
         <group id="Coding.Popup"
