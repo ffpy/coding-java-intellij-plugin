@@ -28,6 +28,7 @@ import org.ffpy.plugin.coding.util.WriteActions;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 @RequiredArgsConstructor
 public class ActionEnv {
@@ -38,63 +39,68 @@ public class ActionEnv {
     private final AnActionEvent event;
 
     /** 对象缓存 */
-    private final Map<String, Object> cache = new HashMap<>();
+    private final Map<String, Object> cacheMap = new HashMap<>();
 
     /**
      * 获取当前打开的文件
      */
     public Optional<PsiFile> getCurFile() {
-        return Optional.ofNullable(event.getData(LangDataKeys.PSI_FILE));
+        return cache("getCurFile", () ->
+                Optional.ofNullable(event.getData(LangDataKeys.PSI_FILE)));
     }
 
     /**
      * 获取当前打开的Java文件
      */
     public Optional<PsiJavaFile> getCurJavaFile() {
-        return getCurFile()
-                .map(it -> (PsiJavaFile) it);
+        return cache("getCurJavaFile", () ->
+                getCurFile().map(it -> (PsiJavaFile) it));
     }
 
     /**
      * 获取当前工程
      */
     public Project getProject() {
-        return Optional.ofNullable(event.getProject())
-                .orElseThrow(() -> new RuntimeException("getProject fail."));
+        return cache("getProject", () ->
+                Optional.ofNullable(event.getProject())
+                        .orElseThrow(() -> new RuntimeException("getProject fail.")));
     }
 
     /**
      * 获取PSI元素工厂
      */
     public PsiElementFactory getElementFactory() {
-        return JavaPsiFacade.getElementFactory(getProject());
+        return cache("getElementFactory", () -> JavaPsiFacade.getElementFactory(getProject()));
     }
 
+    /**
+     * 获取WriteActions
+     */
     public WriteActions getWriteActions() {
-        return (WriteActions) cache.computeIfAbsent("getWriteActions",
-                key -> new WriteActions(getProject()));
+        return cache("getWriteActions", () -> new WriteActions(getProject()));
     }
 
     /**
      * 获取目录工厂
      */
     public PsiDirectoryFactory getDirectoryFactory() {
-        return PsiDirectoryFactory.getInstance(getProject());
+        return cache("getDirectoryFactory", () -> PsiDirectoryFactory.getInstance(getProject()));
     }
 
     /**
      * 获取文件工程
      */
     public PsiFileFactory getFileFactory() {
-        return PsiFileFactory.getInstance(getProject());
+        return cache("getFileFactory", () -> PsiFileFactory.getInstance(getProject()));
     }
 
     /**
      * 获取当前项目的根目录
      */
     public VirtualFile getProjectRootFile() {
-        return Optional.ofNullable(ProjectUtils.getRootFile(getProject()))
-                .orElseThrow(() -> new RuntimeException("getProjectRootFile fail."));
+        return cache("getProjectRootFile", () ->
+                Optional.ofNullable(ProjectUtils.getRootFile(getProject()))
+                        .orElseThrow(() -> new RuntimeException("getProjectRootFile fail.")));
     }
 
     /**
@@ -108,29 +114,31 @@ public class ActionEnv {
      * 获取编辑器实例
      */
     public Optional<Editor> getEditor() {
-        return Optional.ofNullable(event.getData(LangDataKeys.HOST_EDITOR));
+        return cache("getEditor", () ->
+                Optional.ofNullable(event.getData(LangDataKeys.HOST_EDITOR)));
     }
 
     /**
      * 获取当前光标所指元素
      */
     public Optional<PsiElement> getCurElement() {
-        return Optional.ofNullable(event.getData(LangDataKeys.PSI_ELEMENT));
+        return cache("getCurElement", () ->
+                Optional.ofNullable(event.getData(LangDataKeys.PSI_ELEMENT)));
     }
 
     /**
      * 获取PSI管理器
      */
     public PsiManager getPsiManager() {
-        return PsiManager.getInstance(getProject());
+        return cache("getPsiManager", () ->
+                PsiManager.getInstance(getProject()));
     }
 
     /**
      * 获取当前打开的Java文件的顶层类
      */
     public Optional<PsiClass> getCurClass() {
-        return getCurJavaFile()
-                .map(PsiUtils::getClassByFile);
+        return getCurJavaFile().map(PsiUtils::getClassByFile);
     }
 
     /**
@@ -148,18 +156,20 @@ public class ActionEnv {
      * 获取当前选中的类
      */
     public Optional<PsiClass> getSelectedClass() {
-        return Optional.ofNullable(event.getData(LangDataKeys.PSI_ELEMENT))
-                .filter(it -> it instanceof PsiClass)
-                .map(it -> (PsiClass) it);
+        return cache("getSelectedClass", () ->
+                Optional.ofNullable(event.getData(LangDataKeys.PSI_ELEMENT))
+                        .filter(it -> it instanceof PsiClass)
+                        .map(it -> (PsiClass) it));
     }
 
     /**
      * 获取当前选中的方法
      */
     public Optional<PsiMethod> getSelectedMethod() {
-        return Optional.ofNullable(event.getData(LangDataKeys.PSI_ELEMENT))
-                .filter(it -> it instanceof PsiMethod)
-                .map(it -> (PsiMethod) it);
+        return cache("getSelectedMethod", () ->
+                Optional.ofNullable(event.getData(LangDataKeys.PSI_ELEMENT))
+                        .filter(it -> it instanceof PsiMethod)
+                        .map(it -> (PsiMethod) it));
     }
 
     /**
@@ -180,5 +190,10 @@ public class ActionEnv {
             return Optional.ofNullable(files[0]);
         }
         return Optional.empty();
+    }
+
+    @SuppressWarnings("unchecked")
+    private <T> T cache(String key, Supplier<T> valueSupplier) {
+        return (T) cacheMap.computeIfAbsent(key, it -> valueSupplier.get());
     }
 }
