@@ -6,7 +6,6 @@ import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiFile;
 import com.intellij.util.IncorrectOperationException;
 import org.ffpy.plugin.coding.action.ActionService;
-import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 
 import java.time.Instant;
@@ -17,11 +16,8 @@ import java.time.Instant;
 @ActionService
 public class InsertTimestampAction extends BaseIntentionAction {
 
-    @Nls(capitalization = Nls.Capitalization.Sentence)
-    @NotNull
-    @Override
-    public String getText() {
-        return "插入当前时间戳";
+    public InsertTimestampAction() {
+        super("插入当前时间戳");
     }
 
     @Override
@@ -34,10 +30,5 @@ public class InsertTimestampAction extends BaseIntentionAction {
         CaretModel caretModel = editor.getCaretModel();
         int offset = caretModel.getOffset();
         editor.getDocument().insertString(offset, Long.toString(Instant.now().getEpochSecond()));
-    }
-
-    @Override
-    public boolean startInWriteAction() {
-        return true;
     }
 }

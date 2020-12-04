@@ -3,7 +3,6 @@ package org.ffpy.plugin.coding;
 import com.intellij.codeInsight.intention.IntentionManager;
 import lombok.extern.slf4j.Slf4j;
 import org.ffpy.plugin.coding.action.intention.BaseIntentionAction;
-import org.ffpy.plugin.coding.action.intention.InsertTimestampAction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
