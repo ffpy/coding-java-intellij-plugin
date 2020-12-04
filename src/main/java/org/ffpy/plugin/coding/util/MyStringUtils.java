@@ -333,9 +333,9 @@ public class MyStringUtils {
     /**
      * 判断指定位置所在行的前缀是否为子串
      *
-     * @param str        字符串
-     * @param prefix     前缀字符串
-     * @param index      位置
+     * @param str    字符串
+     * @param prefix 前缀字符串
+     * @param index  位置
      * @return true为是，false为否
      */
     public static boolean lineStartsWith(String str, String prefix, int index) {

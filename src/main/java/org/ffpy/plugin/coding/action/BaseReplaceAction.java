@@ -15,7 +15,7 @@ import java.util.Optional;
 public abstract class BaseReplaceAction extends BaseAction {
 
     /**
-     * @param e AnActionEvent
+     * @param e    AnActionEvent
      * @param text 选择的文本
      * @return 改变后的文本，可以为null表示不改变
      * @throws Exception 异常

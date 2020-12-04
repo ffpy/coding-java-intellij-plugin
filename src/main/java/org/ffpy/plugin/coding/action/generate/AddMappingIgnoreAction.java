@@ -9,14 +9,12 @@ import com.intellij.psi.PsiModifier;
 import com.intellij.psi.PsiModifierList;
 import com.intellij.psi.PsiParameter;
 import com.intellij.psi.util.PsiTreeUtil;
-import lombok.extern.slf4j.Slf4j;
 import org.ffpy.plugin.coding.action.ActionService;
 import org.ffpy.plugin.coding.action.BaseAction;
 import org.ffpy.plugin.coding.constant.AnnotationNames;
 import org.ffpy.plugin.coding.util.ActionShowHelper;
 import org.ffpy.plugin.coding.util.IndexUtils;
 import org.ffpy.plugin.coding.util.PsiUtils;
-import org.ffpy.plugin.coding.util.WriteActions;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;

@@ -64,6 +64,14 @@
                 <keyboard-shortcut keymap="$default" first-keystroke="shift alt BACK_QUOTE"/>
             </action>
 
+            <action id="org.ffpy.plugin.coding.action.menu.SortFieldAction"
+                    class="org.ffpy.plugin.coding.action.menu.SortFieldAction"
+                    text="字段排序"/>
+
+            <action id="org.ffpy.plugin.coding.action.menu.SortMethodAction"
+                    class="org.ffpy.plugin.coding.action.menu.SortMethodAction"
+                    text="方法排序"/>
+
         </group>
 
         <group id="Coding.Popup"
