@@ -31,6 +31,9 @@ public class ActionEvnConfig {
         if (event == null) {
             throw new RuntimeException("event not found.");
         }
-        return ActionEnvProxy.getInstance(new ActionEnvImpl(event));
+        ActionEnvImpl target = new ActionEnvImpl(event);
+        ActionEnv proxy = ActionEnvProxy.getInstance(target);
+        target.setSelf(proxy);
+        return proxy;
     }
 }

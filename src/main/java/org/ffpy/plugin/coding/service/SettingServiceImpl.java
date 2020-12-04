@@ -6,6 +6,7 @@ import com.intellij.openapi.util.io.FileUtil;
 import com.sun.istack.Nullable;
 import org.apache.commons.lang3.StringUtils;
 import org.ffpy.plugin.coding.constant.TemplateName;
+import org.ffpy.plugin.coding.util.NotificationHelper;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -30,7 +31,9 @@ public class SettingServiceImpl implements SettingService {
     @Override
     public String getPackageName() {
         String packageName = projectProperties.getValue(KEY_PACKAGE_NAME);
-        // TODO 自动获取包名
+        if (StringUtils.isBlank(packageName)) {
+            NotificationHelper.error("请设置包名").show();
+        }
         return packageName;
     }
 

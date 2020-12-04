@@ -1,5 +1,6 @@
 package org.ffpy.plugin.coding.action.env;
 
+import com.intellij.lang.java.JavaLanguage;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.LangDataKeys;
 import com.intellij.openapi.components.ServiceManager;
@@ -19,12 +20,19 @@ import com.intellij.psi.impl.file.PsiDirectoryFactory;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import org.apache.commons.lang3.StringUtils;
+import org.ffpy.plugin.coding.constant.TemplateName;
 import org.ffpy.plugin.coding.service.SettingService;
 import org.ffpy.plugin.coding.util.IndexUtils;
 import org.ffpy.plugin.coding.util.ProjectUtils;
 import org.ffpy.plugin.coding.util.PsiUtils;
+import org.ffpy.plugin.coding.util.StringHelper;
+import org.ffpy.plugin.coding.util.TemplateUtils;
+import org.ffpy.plugin.coding.util.TranslateHelper;
 import org.ffpy.plugin.coding.util.WriteActions;
 
+import java.util.Map;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -34,6 +42,9 @@ public class ActionEnvImpl implements ActionEnv {
     @Getter
     @NonNull
     private final AnActionEvent event;
+
+    @Setter
+    private ActionEnv self;
 
     @Cache
     @Override
@@ -57,37 +68,37 @@ public class ActionEnvImpl implements ActionEnv {
     @Cache
     @Override
     public PsiElementFactory getElementFactory() {
-        return JavaPsiFacade.getElementFactory(getProject());
+        return JavaPsiFacade.getElementFactory(self.getProject());
     }
 
     @Cache
     @Override
     public WriteActions getWriteActions() {
-        return new WriteActions(getProject());
+        return new WriteActions(self.getProject());
     }
 
     @Cache
     @Override
     public PsiDirectoryFactory getDirectoryFactory() {
-        return PsiDirectoryFactory.getInstance(getProject());
+        return PsiDirectoryFactory.getInstance(self.getProject());
     }
 
     @Cache
     @Override
     public PsiFileFactory getFileFactory() {
-        return PsiFileFactory.getInstance(getProject());
+        return PsiFileFactory.getInstance(self.getProject());
     }
 
     @Cache
     @Override
     public VirtualFile getProjectRootFile() {
-        return Optional.ofNullable(ProjectUtils.getRootFile(getProject()))
+        return Optional.ofNullable(ProjectUtils.getRootFile(self.getProject()))
                 .orElseThrow(() -> new RuntimeException("getProjectRootFile fail."));
     }
 
     @Override
     public SettingService getSettingService() {
-        return ServiceManager.getService(getProject(), SettingService.class);
+        return ServiceManager.getService(self.getProject(), SettingService.class);
     }
 
     @Cache
@@ -105,18 +116,18 @@ public class ActionEnvImpl implements ActionEnv {
     @Cache
     @Override
     public PsiManager getPsiManager() {
-        return PsiManager.getInstance(getProject());
+        return PsiManager.getInstance(self.getProject());
     }
 
     @Cache
     @Override
     public Optional<PsiClass> getCurClass() {
-        return getCurJavaFile().map(PsiUtils::getClassByFile);
+        return self.getCurJavaFile().map(PsiUtils::getClassByFile);
     }
 
     @Override
     public PsiClass getCurClassOrThrow() {
-        return getCurJavaFile()
+        return self.getCurJavaFile()
                 .map(PsiUtils::getClassByFile)
                 .orElseThrow(() -> new RuntimeException("getCurClass fail."));
     }
@@ -150,5 +161,27 @@ public class ActionEnvImpl implements ActionEnv {
             return Optional.ofNullable(files[0]);
         }
         return Optional.empty();
+    }
+
+    @Override
+    public PsiFile createJavaFile(TemplateName templateName, String filename, Map<String, Object> params) {
+        PsiFile file = self.getFileFactory().createFileFromText(JavaLanguage.INSTANCE,
+                TemplateUtils.fromString(self.getSettingService().getTemplate(templateName), params));
+        file.setName(StringHelper.toString(filename + ".java", params));
+        return file;
+    }
+
+    @Override
+    public TranslateHelper getTranslateHelper() {
+        return new TranslateHelper(self.getProject());
+    }
+
+    @Override
+    public Optional<VirtualFile> getPackageFile() {
+        String packageName = self.getSettingService().getPackageName();
+        if (StringUtils.isBlank(packageName)) return Optional.empty();
+
+        return Optional.ofNullable(self.getProjectRootFile()
+                .findFileByRelativePath("src/main/java/" + packageName.replace('.', '/')));
     }
 }

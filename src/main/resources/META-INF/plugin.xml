@@ -72,6 +72,10 @@
                     class="org.ffpy.plugin.coding.action.menu.SortMethodAction"
                     text="方法排序"/>
 
+            <action id="org.ffpy.plugin.coding.action.menu.NewEnumCodeAction"
+                    class="org.ffpy.plugin.coding.action.menu.NewEnumCodeAction"
+                    text="生成EnumCode"/>
+
         </group>
 
         <group id="Coding.Popup"

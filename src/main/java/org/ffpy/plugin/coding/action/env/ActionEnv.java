@@ -13,9 +13,12 @@ import com.intellij.psi.PsiJavaFile;
 import com.intellij.psi.PsiManager;
 import com.intellij.psi.PsiMethod;
 import com.intellij.psi.impl.file.PsiDirectoryFactory;
+import org.ffpy.plugin.coding.constant.TemplateName;
 import org.ffpy.plugin.coding.service.SettingService;
+import org.ffpy.plugin.coding.util.TranslateHelper;
 import org.ffpy.plugin.coding.util.WriteActions;
 
+import java.util.Map;
 import java.util.Optional;
 
 public interface ActionEnv {
@@ -109,11 +112,35 @@ public interface ActionEnv {
 
     /**
      * 根据文件名查找文件，只获取第一个文件
+     *
+     * @param name 文件名
      */
     Optional<VirtualFile> getVirtualFilesByName(String name);
 
     /**
      * 根据文件名查找文件，只获取第一个
+     *
+     * @param name 文件名
      */
     Optional<PsiFile> getFilesByName(String name);
+
+    /**
+     * 根据模板生成Java文件
+     *
+     * @param templateName 模板
+     * @param filename     文件名，不带后缀
+     * @param params       模板参数
+     * @return 生成的Java文件
+     */
+    PsiFile createJavaFile(TemplateName templateName, String filename, Map<String, Object> params);
+
+    /**
+     * 获取翻译工具类
+     */
+    TranslateHelper getTranslateHelper();
+
+    /**
+     * 获取包目录/src/main/java/com.xxx
+     */
+    Optional<VirtualFile> getPackageFile();
 }
