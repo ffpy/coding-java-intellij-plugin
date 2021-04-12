@@ -31,9 +31,9 @@ public class SettingServiceImpl implements SettingService {
     @Override
     public String getPackageName() {
         String packageName = projectProperties.getValue(KEY_PACKAGE_NAME);
-        if (StringUtils.isBlank(packageName)) {
-            NotificationHelper.error("请设置包名").show();
-        }
+//        if (StringUtils.isBlank(packageName)) {
+//            NotificationHelper.error("请设置包名").show();
+//        }
         return packageName;
     }
 
