@@ -1,27 +1,15 @@
 package org.ffpy.plugin.coding.action.menu;
 
-import com.intellij.psi.PsiClass;
-import com.intellij.psi.PsiComment;
-import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiEnumConstant;
-import com.intellij.psi.PsiField;
-import com.intellij.psi.PsiWhiteSpace;
+import com.intellij.psi.*;
 import com.intellij.psi.util.PsiTreeUtil;
-import org.ffpy.plugin.coding.action.ActionService;
 import org.ffpy.plugin.coding.util.PsiUtils;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
  * 字段排序
  */
-@ActionService
 public class SortFieldAction extends BaseSortAction {
 
     @Override

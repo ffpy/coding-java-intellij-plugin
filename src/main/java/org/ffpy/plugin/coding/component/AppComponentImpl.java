@@ -2,6 +2,7 @@ package org.ffpy.plugin.coding.component;
 
 import lombok.extern.slf4j.Slf4j;
 import org.ffpy.plugin.coding.Application;
+import org.ffpy.plugin.coding.util.NotificationHelper;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -17,8 +18,7 @@ public class AppComponentImpl implements AppComponent {
 
     @Override
     public void initComponent() {
-        log.info("错误日志位置：{}", new File("log/CodingPlugin.log").getAbsolutePath());
-
+//        NotificationHelper.info("initComponent").show();
         Application.start();
     }
 }

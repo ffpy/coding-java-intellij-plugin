@@ -5,7 +5,6 @@ import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiFile;
 import com.intellij.util.IncorrectOperationException;
-import org.ffpy.plugin.coding.action.ActionService;
 import org.jetbrains.annotations.NotNull;
 
 import java.time.Instant;
@@ -13,7 +12,6 @@ import java.time.Instant;
 /**
  * 插入当前时间戳
  */
-@ActionService
 public class InsertTimestampAction extends BaseIntentionAction {
 
     public InsertTimestampAction() {

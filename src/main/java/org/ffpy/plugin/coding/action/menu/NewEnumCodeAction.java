@@ -11,22 +11,12 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.ffpy.plugin.coding.action.ActionService;
 import org.ffpy.plugin.coding.action.BaseAction;
 import org.ffpy.plugin.coding.constant.TemplateName;
-import org.ffpy.plugin.coding.util.ActionShowHelper;
-import org.ffpy.plugin.coding.util.EditorUtils;
-import org.ffpy.plugin.coding.util.FileUtils;
-import org.ffpy.plugin.coding.util.MyStringUtils;
-import org.ffpy.plugin.coding.util.NotificationHelper;
+import org.ffpy.plugin.coding.util.*;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -36,7 +26,6 @@ import java.util.stream.Collectors;
  * 生成EnumCode
  */
 @Slf4j
-@ActionService
 public class NewEnumCodeAction extends BaseAction {
 
     private static final Predicate<String> PREDICATE_UPDATE = Pattern.compile(

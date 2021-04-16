@@ -2,14 +2,8 @@ package org.ffpy.plugin.coding.action.generate;
 
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
-import com.intellij.psi.PsiAnnotation;
-import com.intellij.psi.PsiClass;
-import com.intellij.psi.PsiMethod;
-import com.intellij.psi.PsiModifier;
-import com.intellij.psi.PsiModifierList;
-import com.intellij.psi.PsiParameter;
+import com.intellij.psi.*;
 import com.intellij.psi.util.PsiTreeUtil;
-import org.ffpy.plugin.coding.action.ActionService;
 import org.ffpy.plugin.coding.action.BaseAction;
 import org.ffpy.plugin.coding.constant.AnnotationNames;
 import org.ffpy.plugin.coding.util.ActionShowHelper;
@@ -17,19 +11,12 @@ import org.ffpy.plugin.coding.util.IndexUtils;
 import org.ffpy.plugin.coding.util.PsiUtils;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
  * Mapping自动添加ignore
  */
-@ActionService
 public class AddMappingIgnoreAction extends BaseAction {
 
     @Override

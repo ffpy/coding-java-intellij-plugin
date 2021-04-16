@@ -4,7 +4,6 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.psi.PsiAnnotation;
 import com.intellij.psi.PsiExpression;
 import com.intellij.psi.PsiField;
-import org.ffpy.plugin.coding.action.ActionService;
 import org.ffpy.plugin.coding.action.BaseAction;
 import org.ffpy.plugin.coding.constant.AnnotationNames;
 import org.ffpy.plugin.coding.util.ActionShowHelper;
@@ -16,7 +15,6 @@ import java.util.Objects;
 /**
  * ApiModel自动编号
  */
-@ActionService
 public class ApiModelAutoPositionAction extends BaseAction {
 
     private static final String POSITION_ATTR_NAME = "position";

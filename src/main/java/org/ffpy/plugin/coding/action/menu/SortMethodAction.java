@@ -3,7 +3,6 @@ package org.ffpy.plugin.coding.action.menu;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiMethod;
-import org.ffpy.plugin.coding.action.ActionService;
 import org.ffpy.plugin.coding.util.PsiUtils;
 
 import java.util.Arrays;
@@ -12,7 +11,6 @@ import java.util.Comparator;
 /**
  * 方法排序
  */
-@ActionService
 public class SortMethodAction extends BaseSortAction {
 
     @Override

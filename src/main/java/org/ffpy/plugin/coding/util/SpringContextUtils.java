@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.env.Environment;
-import org.springframework.stereotype.Component;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -17,7 +16,6 @@ import java.util.function.Consumer;
 /**
  * Spring上下文工具类
  */
-@Component
 public class SpringContextUtils implements InitializingBean, ApplicationContextAware {
 
     /** Spring环境 */

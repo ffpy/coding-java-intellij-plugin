@@ -1,7 +1,6 @@
 package org.ffpy.plugin.coding.action.menu;
 
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import org.ffpy.plugin.coding.action.ActionService;
 import org.ffpy.plugin.coding.action.BaseReplaceAction;
 import org.ffpy.plugin.coding.util.CharacterUtils;
 import org.ffpy.plugin.coding.util.SqlUtils;
@@ -9,7 +8,6 @@ import org.ffpy.plugin.coding.util.SqlUtils;
 /**
  * SQL字段用反引号包裹
  */
-@ActionService
 public class WrapBackquoteAction extends BaseReplaceAction {
 
     @Override

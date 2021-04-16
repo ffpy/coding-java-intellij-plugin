@@ -2,7 +2,6 @@ package org.ffpy.plugin.coding.action.menu;
 
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiMethod;
-import org.ffpy.plugin.coding.action.ActionService;
 import org.ffpy.plugin.coding.util.PsiUtils;
 
 import java.util.stream.Stream;
@@ -10,7 +9,6 @@ import java.util.stream.Stream;
 /**
  * 生成Setter调用
  */
-@ActionService
 public class GenerateSetterCallerAction extends BaseSetterGetterCallerAction {
 
     @Override

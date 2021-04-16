@@ -7,7 +7,6 @@ import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.SelectionModel;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.ffpy.plugin.coding.action.ActionService;
 import org.ffpy.plugin.coding.action.BaseAction;
 import org.ffpy.plugin.coding.util.ActionShowHelper;
 import org.ffpy.plugin.coding.util.MyStringUtils;
@@ -23,7 +22,6 @@ import java.util.stream.Collectors;
 /**
  * 格式化SQL脚本
  */
-@ActionService
 public class FormatSqlAction extends BaseAction {
 
     private static final Pattern PATTERN_FORMAT_INSERT = Pattern.compile(
