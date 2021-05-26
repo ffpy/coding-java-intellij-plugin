@@ -83,6 +83,9 @@ dependencies {
     // Json
     implementation group: 'org.json', name: 'json', version: '20190722'
 
+    // Dom4j
+    implementation group: 'org.dom4j', name: 'dom4j', version: '2.1.3'
+
     // Extra
     implementation group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.2'
 

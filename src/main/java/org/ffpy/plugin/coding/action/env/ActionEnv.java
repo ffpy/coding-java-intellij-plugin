@@ -4,20 +4,14 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.psi.PsiClass;
-import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiElementFactory;
-import com.intellij.psi.PsiFile;
-import com.intellij.psi.PsiFileFactory;
-import com.intellij.psi.PsiJavaFile;
-import com.intellij.psi.PsiManager;
-import com.intellij.psi.PsiMethod;
+import com.intellij.psi.*;
 import com.intellij.psi.impl.file.PsiDirectoryFactory;
 import org.ffpy.plugin.coding.constant.TemplateName;
 import org.ffpy.plugin.coding.service.SettingService;
 import org.ffpy.plugin.coding.util.TranslateHelper;
 import org.ffpy.plugin.coding.util.WriteActions;
 
+import java.io.IOException;
 import java.util.Map;
 import java.util.Optional;
 
@@ -143,4 +137,12 @@ public interface ActionEnv {
      * 获取包目录/src/main/java/com.xxx
      */
     Optional<VirtualFile> getPackageFile();
+
+    /**
+     * 获取或创建包目录
+     *
+     * @param packageName 包名
+     * @return 包文件夹
+     */
+    PsiDirectory findOrCreateDirectoryByPackageName(String packageName) throws IOException;
 }

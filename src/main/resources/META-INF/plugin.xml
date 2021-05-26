@@ -18,9 +18,9 @@
         <projectService serviceInterface="org.ffpy.plugin.coding.service.SettingService"
                         serviceImplementation="org.ffpy.plugin.coding.service.SettingServiceImpl"/>
 
-        <completion.confidence id="org.ffpy.plugin.coding.completion.MyCompletionConfidence"
-                               implementationClass="org.ffpy.plugin.coding.completion.MyCompletionConfidence"
-                               order="first" language="JAVA"/>
+<!--        <completion.confidence id="org.ffpy.plugin.coding.completion.MyCompletionConfidence"-->
+<!--                               implementationClass="org.ffpy.plugin.coding.completion.MyCompletionConfidence"-->
+<!--                               order="first" language="JAVA"/>-->
     </extensions>
 
     <application-components>
@@ -75,6 +75,11 @@
             <action id="org.ffpy.plugin.coding.action.menu.NewEnumCodeAction"
                     class="org.ffpy.plugin.coding.action.menu.NewEnumCodeAction"
                     text="生成EnumCode"/>
+
+            <action
+                id="org.ffpy.plugin.coding.action.menu.XmlToBeanAction"
+                class="org.ffpy.plugin.coding.action.menu.XmlToBeanAction"
+                text="XML转Bean(XStream)"/>
 
         </group>
 

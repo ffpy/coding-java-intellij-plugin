@@ -1,0 +1,11 @@
+import com.thoughtworks.xstream.annotations.XStreamAlias;
+import lombok.Data;
+
+@Data
+public class ${className} {
+#foreach($field in $fields)
+
+    @XStreamAlias("${field.elementName}")
+    private ${field.type} ${field.name};
+#end
+}

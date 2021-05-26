@@ -7,15 +7,7 @@ import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.psi.JavaPsiFacade;
-import com.intellij.psi.PsiClass;
-import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiElementFactory;
-import com.intellij.psi.PsiFile;
-import com.intellij.psi.PsiFileFactory;
-import com.intellij.psi.PsiJavaFile;
-import com.intellij.psi.PsiManager;
-import com.intellij.psi.PsiMethod;
+import com.intellij.psi.*;
 import com.intellij.psi.impl.file.PsiDirectoryFactory;
 import lombok.Getter;
 import lombok.NonNull;
@@ -24,14 +16,9 @@ import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 import org.ffpy.plugin.coding.constant.TemplateName;
 import org.ffpy.plugin.coding.service.SettingService;
-import org.ffpy.plugin.coding.util.IndexUtils;
-import org.ffpy.plugin.coding.util.ProjectUtils;
-import org.ffpy.plugin.coding.util.PsiUtils;
-import org.ffpy.plugin.coding.util.StringHelper;
-import org.ffpy.plugin.coding.util.TemplateUtils;
-import org.ffpy.plugin.coding.util.TranslateHelper;
-import org.ffpy.plugin.coding.util.WriteActions;
+import org.ffpy.plugin.coding.util.*;
 
+import java.io.IOException;
 import java.util.Map;
 import java.util.Optional;
 
@@ -165,8 +152,9 @@ public class ActionEnvImpl implements ActionEnv {
 
     @Override
     public PsiFile createJavaFile(TemplateName templateName, String filename, Map<String, Object> params) {
-        PsiFile file = self.getFileFactory().createFileFromText(JavaLanguage.INSTANCE,
-                TemplateUtils.fromString(self.getSettingService().getTemplate(templateName), params));
+        String content = TemplateUtils.fromString(self.getSettingService().getTemplate(templateName), params)
+                .replace("\r\n", "\n");
+        PsiFile file = self.getFileFactory().createFileFromText(JavaLanguage.INSTANCE, content);
         file.setName(StringHelper.toString(filename + ".java", params));
         return file;
     }
@@ -183,5 +171,29 @@ public class ActionEnvImpl implements ActionEnv {
 
         return Optional.ofNullable(self.getProjectRootFile()
                 .findFileByRelativePath("src/main/java/" + packageName.replace('.', '/')));
+    }
+
+    @Override
+    public PsiDirectory findOrCreateDirectoryByPackageName(String packageName) throws IOException {
+        VirtualFile file = self.getProjectRootFile().findFileByRelativePath("src/main/java/");
+        if (file == null) return null;
+        String s = packageName;
+
+        while (!s.isEmpty()) {
+            String[] split = StringUtils.split(s, ".", 2);
+            String dirName = split[0];
+            s = split.length > 1 ? split[1] : "";
+
+            file = findOrCreateDirectory(file, dirName);
+        }
+        return getDirectoryFactory().createDirectory(file);
+    }
+
+    private VirtualFile findOrCreateDirectory(VirtualFile file, String name) throws IOException {
+        VirtualFile child = file.findChild(name);
+        if (child == null) {
+            child = file.createChildDirectory(this, name);
+        }
+        return child;
     }
 }

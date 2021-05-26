@@ -5,6 +5,7 @@ package org.ffpy.plugin.coding.constant;
  */
 public enum TemplateName {
     ENUM_CODE("EnumCode.vm"),
+    XML_TO_BEAN("XmlToBean.vm"),
     ;
 
     public static final String PATH_TEMPLATE = "/template/";

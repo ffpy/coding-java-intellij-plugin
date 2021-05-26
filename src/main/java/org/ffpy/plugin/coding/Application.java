@@ -103,6 +103,12 @@ public class Application implements CommandLineRunner {
 
     @Bean
     @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
+    public XmlToBeanAction xmlToBeanAction() {
+        return new XmlToBeanAction();
+    }
+
+    @Bean
+    @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
     public SortFieldAction sortFieldAction() {
         return new SortFieldAction();
     }
