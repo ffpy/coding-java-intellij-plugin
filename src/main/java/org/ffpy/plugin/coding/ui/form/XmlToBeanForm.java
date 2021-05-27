@@ -9,8 +9,10 @@ import org.ffpy.plugin.coding.ui.utils.InputLimit;
 
 import javax.annotation.Nullable;
 import javax.swing.*;
-import java.awt.event.*;
-import java.util.regex.Pattern;
+import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 public class XmlToBeanForm extends JDialog {
     private JPanel contentPane;
@@ -35,9 +37,9 @@ public class XmlToBeanForm extends JDialog {
 
         if (StringUtils.isNotEmpty(text)) {
             setText(text);
-            SwingUtilities.invokeLater(() -> packageName.requestFocus());
+            EventQueue.invokeLater(() -> packageName.requestFocus());
         } else {
-            SwingUtilities.invokeLater(() -> this.text.requestFocus());
+            EventQueue.invokeLater(() -> this.text.requestFocus());
         }
 
         buttonOK.addActionListener(e -> onOK());

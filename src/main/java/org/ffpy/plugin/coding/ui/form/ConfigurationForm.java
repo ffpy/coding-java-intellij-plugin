@@ -37,9 +37,6 @@ public class ConfigurationForm implements BaseForm {
     @Getter
     private JTextField translateSecretField;
 
-    @Getter
-    private JTextField logFilePath;
-
     private Map<TemplateName, Editor> editorMap = new HashMap<>();
 
     private EditorFactory editorFactory;
@@ -64,7 +61,7 @@ public class ConfigurationForm implements BaseForm {
 
     private void addTab(EditorFactory factory, FileType fileType, Map.Entry<TemplateName, String> entry) {
         EventQueue.invokeLater(() -> {
-            Document document = factory.createDocument(entry.getValue());
+            Document document = factory.createDocument(entry.getValue().replace("\r\n", "\n"));
             Editor editor = factory.createEditor(document, null, fileType, false);
             editorMap.put(entry.getKey(), editor);
             tabPane.addTab(entry.getKey().getName(), editor.getComponent());
@@ -81,7 +78,7 @@ public class ConfigurationForm implements BaseForm {
         for (Map.Entry<TemplateName, String> entry : templateMap.entrySet()) {
             Optional.ofNullable(editorMap.get(entry.getKey()))
                     .ifPresent(editor -> ApplicationManager.getApplication().runWriteAction(() ->
-                            editor.getDocument().setText(entry.getValue())));
+                            editor.getDocument().setText(entry.getValue().replace("\r\n", "\n"))));
         }
     }
 
