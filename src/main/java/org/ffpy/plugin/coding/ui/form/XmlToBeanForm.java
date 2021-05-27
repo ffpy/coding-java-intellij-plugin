@@ -1,5 +1,10 @@
 package org.ffpy.plugin.coding.ui.form;
 
+import com.intellij.openapi.application.WriteAction;
+import com.intellij.openapi.editor.Editor;
+import com.intellij.openapi.editor.EditorFactory;
+import com.intellij.openapi.fileTypes.FileType;
+import com.intellij.openapi.fileTypes.FileTypeManager;
 import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
@@ -20,26 +25,23 @@ public class XmlToBeanForm extends JDialog {
     private JButton buttonCancel;
     private JTextField packageName;
     private JComboBox<String> commentPosition;
-    private JTextArea text;
     private JLabel tip;
+    private JPanel textPane;
 
     private Action action;
+    private com.intellij.openapi.editor.Document document;
 
     public XmlToBeanForm(@Nullable String text) {
         setTitle("XML转Bean");
 
-        setSize(800, 900);
         setContentPane(contentPane);
         setModal(true);
         getRootPane().setDefaultButton(buttonOK);
 
-        initComponent();
+        initComponent(text);
 
         if (StringUtils.isNotEmpty(text)) {
-            setText(text);
             EventQueue.invokeLater(() -> packageName.requestFocus());
-        } else {
-            EventQueue.invokeLater(() -> this.text.requestFocus());
         }
 
         buttonOK.addActionListener(e -> onOK());
@@ -64,11 +66,11 @@ public class XmlToBeanForm extends JDialog {
     }
 
     public String getText() {
-        return text.getText();
+        return document.getText();
     }
 
     public void setText(String text) {
-        this.text.setText(text);
+        WriteAction.run(() -> document.setText(text));
     }
 
     public String getPackageName() {
@@ -76,14 +78,20 @@ public class XmlToBeanForm extends JDialog {
     }
 
     public void setPackageName(String packageName) {
-        this.packageName.setText(packageName);
+        EventQueue.invokeLater(() -> this.packageName.setText(packageName));
     }
 
     public void setTip(String tip) {
         this.tip.setText(tip);
     }
 
-    private void initComponent() {
+    private void initComponent(@Nullable String text) {
+        FileType fileType = FileTypeManager.getInstance().getFileTypeByExtension("xml");
+        EditorFactory factory = EditorFactory.getInstance();
+        document = factory.createDocument(text == null ? "" : text);
+        Editor editor = factory.createEditor(document, null, fileType, false);
+        textPane.add(editor.getComponent(), BorderLayout.CENTER);
+
         for (CommentPosition position : CommentPosition.values()) {
             commentPosition.addItem(position.getName());
         }
@@ -95,7 +103,6 @@ public class XmlToBeanForm extends JDialog {
         String text = getText();
         if (text.isEmpty()) {
             setTip("XML内容不能为空");
-            this.text.requestFocus();
             return;
         }
 
@@ -104,7 +111,6 @@ public class XmlToBeanForm extends JDialog {
             doc = DocumentHelper.parseText(text);
         } catch (DocumentException e) {
             setTip("XML内容格式不正确");
-            this.text.requestFocus();
             return;
         }
 
@@ -122,6 +128,10 @@ public class XmlToBeanForm extends JDialog {
 
     private void onCancel() {
         dispose();
+    }
+
+    private void createUIComponents() {
+        // TODO: place custom component creation code here
     }
 
     public interface Action {

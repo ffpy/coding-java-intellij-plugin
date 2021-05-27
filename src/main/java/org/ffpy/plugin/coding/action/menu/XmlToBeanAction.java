@@ -30,6 +30,7 @@ public class XmlToBeanAction extends BaseAction implements XmlToBeanForm.Action 
     public void action() throws Exception {
         XmlToBeanForm form = new XmlToBeanForm(getCopyText().orElse(null));
         form.setAction(this);
+        form.pack();
         form.setLocationRelativeTo(null);
         form.setVisible(true);
     }
