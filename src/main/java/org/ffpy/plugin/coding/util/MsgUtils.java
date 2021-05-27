@@ -1,5 +1,6 @@
 package org.ffpy.plugin.coding.util;
 
+import cn.hutool.core.util.StrUtil;
 import com.intellij.openapi.ui.Messages;
 
 public class MsgUtils {
@@ -9,14 +10,14 @@ public class MsgUtils {
     private static final String TITLE_ERROR = "错误";
 
     public static void info(String message, Object... param) {
-        Messages.showInfoMessage(String.format(String.valueOf(message), param), TITLE_INFO);
+        Messages.showInfoMessage(StrUtil.format(message, param), TITLE_INFO);
     }
 
     public static void warn(String message, Object... param) {
-        Messages.showWarningDialog(String.format(String.valueOf(message), param), TITLE_WARN);
+        Messages.showWarningDialog(StrUtil.format(message, param), TITLE_WARN);
     }
 
     public static void error(String message, Object... param) {
-        Messages.showErrorDialog(String.format(String.valueOf(message), param), TITLE_ERROR);
+        Messages.showErrorDialog(StrUtil.format(message, param), TITLE_ERROR);
     }
 }

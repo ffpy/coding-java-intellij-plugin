@@ -1,11 +1,44 @@
+#*
+变量:
+className: 类名
+elementName: 标签名
+isRoot: 是否是根标签
+fields: 字段列表
+    name: 字段名
+    type: 字段类型
+    elementName: 标签名
+    comment: 注释，没有则为null
+    isList: 是否是List类型
+hasSingle: 是否有单个的子标签
+hasList: 是否有List类型的子标签
+ *#
+#if($hasSingle)
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+#end
+#if($hasList)
+import com.thoughtworks.xstream.annotations.XStreamImplicit;
+#end
 import lombok.Data;
+#if($hasList)
+
+import java.util.List;
+#end
 
 @Data
+#if($isRoot)
+@XStreamAlias("${elementName}")
+#end
 public class ${className} {
 #foreach($field in $fields)
 
+#if($field.comment)
+    /** ${field.comment} */
+#end
+#if($field.isList)
+    @XStreamImplicit(itemFieldName = "${field.elementName}")
+#else
     @XStreamAlias("${field.elementName}")
+#end
     private ${field.type} ${field.name};
 #end
 }

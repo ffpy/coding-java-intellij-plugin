@@ -5,17 +5,19 @@ import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.ffpy.plugin.coding.constant.CommentPosition;
+import org.ffpy.plugin.coding.ui.utils.InputLimit;
 
 import javax.annotation.Nullable;
 import javax.swing.*;
 import java.awt.event.*;
+import java.util.regex.Pattern;
 
 public class XmlToBeanForm extends JDialog {
     private JPanel contentPane;
     private JButton buttonOK;
     private JButton buttonCancel;
     private JTextField packageName;
-    private JComboBox commentPosition;
+    private JComboBox<String> commentPosition;
     private JTextArea text;
     private JLabel tip;
 
@@ -33,18 +35,14 @@ public class XmlToBeanForm extends JDialog {
 
         if (StringUtils.isNotEmpty(text)) {
             setText(text);
-            packageName.requestFocus();
+            SwingUtilities.invokeLater(() -> packageName.requestFocus());
         } else {
-            this.text.requestFocus();
+            SwingUtilities.invokeLater(() -> this.text.requestFocus());
         }
 
-        buttonOK.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {onOK();}
-        });
+        buttonOK.addActionListener(e -> onOK());
 
-        buttonCancel.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {onCancel();}
-        });
+        buttonCancel.addActionListener(e -> onCancel());
 
         // call onCancel() when cross is clicked
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
@@ -55,11 +53,8 @@ public class XmlToBeanForm extends JDialog {
         });
 
         // call onCancel() on ESCAPE
-        contentPane.registerKeyboardAction(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                onCancel();
-            }
-        }, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+        contentPane.registerKeyboardAction(e -> onCancel(), KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
+                JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
     }
 
     public void setAction(Action action) {
@@ -86,16 +81,16 @@ public class XmlToBeanForm extends JDialog {
         this.tip.setText(tip);
     }
 
-    @SuppressWarnings("unchecked")
     private void initComponent() {
         for (CommentPosition position : CommentPosition.values()) {
             commentPosition.addItem(position.getName());
         }
+
+        new InputLimit(packageName, "^[a-z_]+(\\.[a-z0-9_]*)*$");
     }
 
     private void onOK() {
         String text = getText();
-        System.out.println(text);
         if (text.isEmpty()) {
             setTip("XML内容不能为空");
             this.text.requestFocus();

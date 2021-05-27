@@ -1,28 +1,23 @@
 package org.ffpy.plugin.coding.action.menu;
 
-import com.intellij.psi.PsiClass;
+import cn.hutool.core.lang.Holder;
+import cn.hutool.core.util.StrUtil;
 import com.intellij.psi.PsiDirectory;
-import com.intellij.psi.PsiElementFactory;
 import com.intellij.psi.PsiFile;
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.dom4j.Document;
 import org.dom4j.Element;
+import org.dom4j.Node;
 import org.ffpy.plugin.coding.action.BaseAction;
 import org.ffpy.plugin.coding.constant.CommentPosition;
 import org.ffpy.plugin.coding.constant.TemplateName;
 import org.ffpy.plugin.coding.ui.form.XmlToBeanForm;
-import org.ffpy.plugin.coding.util.CopyPasteUtils;
-import org.ffpy.plugin.coding.util.FileUtils;
-import org.ffpy.plugin.coding.util.NotificationHelper;
+import org.ffpy.plugin.coding.util.*;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
+import java.util.concurrent.CountDownLatch;
 import java.util.stream.Collectors;
 
 /**
@@ -30,9 +25,6 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 public class XmlToBeanAction extends BaseAction implements XmlToBeanForm.Action {
-
-    // el.selectNodes("./preceding-sibling::comment()[1]")
-    // el.selectNodes("./following-sibling::comment()[1]")
 
     @Override
     public void action() throws Exception {
@@ -47,42 +39,100 @@ public class XmlToBeanAction extends BaseAction implements XmlToBeanForm.Action 
         PsiDirectory directory = getDirectory(packageName);
         if (directory == null) return;
 
-        parseElement(doc.getRootElement(), directory);
+        parseElement(doc.getRootElement(), directory, position);
 
         env.getWriteActions().run();
     }
 
-    private FieldData parseElement(Element el, PsiDirectory directory) {
-        PsiElementFactory factory = env.getElementFactory();
-        if (el.isTextOnly()) {
-            return new FieldData(normalFieldName(el.getName()), "String", el.getName());
-        } else {
-            PsiClass psiClass = factory.createClass(el.getName());
+    private FieldData parseElement(Element el, PsiDirectory directory, CommentPosition position) {
+        String comment = el.isRootElement() ? null : getComment(el, position);
 
-            List<FieldData> fields = el.elements().stream()
-                    .map(e -> parseElement(e, directory))
+        if (el.isTextOnly()) {
+            return new FieldData(normalFieldName(el.getName()), "String", el.getName(), comment);
+        } else {
+            String className = normalClassName(el.getName());
+
+            List<Element> elements = el.elements();
+            Set<String> listElements = getListElements(elements);
+
+            List<FieldData> fields = elements.stream()
+                    .filter(StreamUtils.distinct(Node::getName))
+                    .map(e -> parseElement(e, directory, position))
+                    .map(field -> processList(listElements, field))
                     .collect(Collectors.toList());
 
             Map<String, Object> params = new HashMap<>(8);
-            params.put("className", psiClass.getName());
+            params.put("className", className);
+            params.put("elementName", el.getName());
+            params.put("isRoot", el.isRootElement());
             params.put("fields", fields);
+            params.put("hasSingle", fields.size() != listElements.size());
+            params.put("hasList", !listElements.isEmpty());
 
             env.getWriteActions().add(() -> {
-                PsiFile psiFile = env.createJavaFile(TemplateName.XML_TO_BEAN, psiClass.getName(), params);
+                PsiFile psiFile = env.createJavaFile(TemplateName.XML_TO_BEAN, className, params);
                 FileUtils.addIfAbsent(directory, psiFile);
             });
 
-            return new FieldData(normalFieldName(el.getName()), psiClass.getName(), el.getName());
+            return new FieldData(normalFieldName(el.getName()), className, el.getName(), comment);
         }
     }
 
-    private PsiDirectory getDirectory(String packageName) {
-        try {
-            return env.findOrCreateDirectoryByPackageName(packageName);
-        } catch (IOException e) {
-            NotificationHelper.error("生成包名失败: {}", e.getMessage());
-            return null;
+    private FieldData processList(Set<String> listElements, FieldData field) {
+        field.setIsList(listElements.contains(field.getElementName()));
+        if (field.getIsList()) {
+            field.setType(StrUtil.format("List<{}>", field.getType()));
+
+            if (field.getName().endsWith("s")) {
+                field.setName(field.getName() + "List");
+            } else {
+                field.setName(field.getName() + "s");
+            }
         }
+        return field;
+    }
+
+    /**
+     * 获取是List类型的标签名
+     *
+     * @param elements 标签列表
+     * @return 是List类型的标签名集合
+     */
+    private Set<String> getListElements(List<Element> elements) {
+        Map<String, Integer> elementCounter = new HashMap<>();
+        elements.stream().map(Node::getName)
+                .forEach(name -> elementCounter.put(name,
+                        elementCounter.getOrDefault(name, 0) + 1));
+        elementCounter.values().removeIf(count -> count <= 1);
+        return elementCounter.keySet();
+    }
+
+    private String getComment(Element el, CommentPosition position) {
+        return position.getFinder().apply(el).stream()
+                .findFirst()
+                .map(Node::getText)
+                .orElse(null);
+    }
+
+    private PsiDirectory getDirectory(String packageName) {
+        Holder<PsiDirectory> directory = new Holder<>();
+        CountDownLatch latch = new CountDownLatch(1);
+
+        new WriteActions(env.getProject()).add(() -> {
+            try {
+                directory.set(env.findOrCreateDirectoryByPackageName(packageName));
+                latch.countDown();
+            } catch (IOException e) {
+                NotificationHelper.error("生成包名失败: {}", e.getMessage());
+            }
+        }).run();
+
+        try {
+            latch.await();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        return directory.get();
     }
 
     private Optional<String> getCopyText() {
@@ -90,14 +140,20 @@ public class XmlToBeanAction extends BaseAction implements XmlToBeanForm.Action 
     }
 
     private String normalFieldName(String name) {
-        StringBuilder sb = new StringBuilder();
+        if (name.length() < 2) return name.toLowerCase();
 
-        return name;
+        name = MyStringUtils.underScoreCase2CamelCase(name);
+        return name.substring(0, 1).toLowerCase() + name.substring(1);
+    }
+
+    private String normalClassName(String name) {
+        if (name.length() < 2) return name.toLowerCase();
+
+        name = MyStringUtils.underScoreCase2CamelCase(name);
+        return name.substring(0, 1).toUpperCase() + name.substring(1);
     }
 
     @Data
-    @NoArgsConstructor
-    @AllArgsConstructor
     public static class FieldData {
         /** 字段名 */
         private String name;
@@ -107,5 +163,18 @@ public class XmlToBeanAction extends BaseAction implements XmlToBeanForm.Action 
 
         /** 标签名 */
         private String elementName;
+
+        /** 注释 */
+        private String comment;
+
+        /** 是否是List类型 */
+        private Boolean isList = false;
+
+        public FieldData(String name, String type, String elementName, String comment) {
+            this.name = name;
+            this.type = type;
+            this.elementName = elementName;
+            this.comment = comment;
+        }
     }
 }

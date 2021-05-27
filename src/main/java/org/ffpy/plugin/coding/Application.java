@@ -85,18 +85,6 @@ public class Application implements CommandLineRunner {
 
     @Bean
     @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-    public GenerateGetterCallerAction generateGetterCallerAction() {
-        return new GenerateGetterCallerAction();
-    }
-
-    @Bean
-    @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-    public GenerateSetterCallerAction generateSetterCallerAction() {
-        return new GenerateSetterCallerAction();
-    }
-
-    @Bean
-    @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
     public NewEnumCodeAction newEnumCodeAction() {
         return new NewEnumCodeAction();
     }
