@@ -109,10 +109,7 @@ public class XmlToBeanAction extends BaseAction implements XmlToBeanForm.Action 
     }
 
     private String getComment(Element el, CommentPosition position) {
-        return position.getFinder().apply(el).stream()
-                .findFirst()
-                .map(Node::getText)
-                .orElse(null);
+        return position.findComment(el).map(Node::getText).orElse(null);
     }
 
     private PsiDirectory getDirectory(String packageName) {
