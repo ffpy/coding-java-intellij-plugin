@@ -10,6 +10,7 @@ import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.ffpy.plugin.coding.constant.CommentPosition;
+import org.ffpy.plugin.coding.constant.Constant;
 import org.ffpy.plugin.coding.ui.utils.InputLimit;
 
 import javax.annotation.Nullable;
@@ -96,7 +97,7 @@ public class XmlToBeanForm extends JDialog {
             commentPosition.addItem(position.getName());
         }
 
-        new InputLimit(packageName, "^[a-z_]+(\\.[a-z0-9_]*)*$");
+        new InputLimit(packageName, Constant.PATTERN_PACKAGE_NAME);
     }
 
     private void onOK() {

@@ -2,6 +2,7 @@ package org.ffpy.plugin.coding.action.menu;
 
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.LangDataKeys;
+import com.intellij.openapi.application.WriteAction;
 import com.intellij.openapi.editor.CaretModel;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
@@ -12,10 +13,13 @@ import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.ffpy.plugin.coding.action.BaseAction;
+import org.ffpy.plugin.coding.constant.Constant;
 import org.ffpy.plugin.coding.constant.TemplateName;
+import org.ffpy.plugin.coding.ui.dialog.InputDialog;
 import org.ffpy.plugin.coding.util.*;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
@@ -46,16 +50,18 @@ public class NewEnumCodeAction extends BaseAction {
 
     @Override
     public void action() throws Exception {
-        PsiDirectory directory = getDirectory()
-                .orElseThrow(() -> new RuntimeException("找不到constant文件夹"));
+        new InputDialog("生成EnumCode", "包名", null, Constant.PATTERN_PACKAGE_NAME, packageName -> {
+            PsiDirectory directory = getDirectory(packageName);
 
-        PsiFile file = createFile(directory);
-        if (file == null) return;
+            PsiFile file = createFile(directory);
+            if (file == null) return true;
 
-        env.getWriteActions().add(() -> {
-            FileUtils.addIfAbsent(directory, file);
-            FileUtils.navigateFile(env.getProject(), directory, file.getName());
-        }).run();
+            env.getWriteActions().add(() -> {
+                FileUtils.addIfAbsent(directory, file);
+                FileUtils.navigateFile(env.getProject(), directory, file.getName());
+            }).run();
+            return true;
+        }).show();
     }
 
     @Override
@@ -194,11 +200,15 @@ public class NewEnumCodeAction extends BaseAction {
 
     /**
      * 获取文件夹
+     *
+     * @param packageName 包名
      */
-    private Optional<PsiDirectory> getDirectory() {
-        return env.getPackageFile()
-                .map(file -> file.findFileByRelativePath("/constant"))
-                .map(it -> env.getDirectoryFactory().createDirectory(it));
+    private PsiDirectory getDirectory(String packageName) {
+        try {
+            return WriteAction.computeAndWait(() -> env.findOrCreateDirectoryByPackageName(packageName));
+        } catch (IOException e) {
+            throw new RuntimeException("创建文件夹失败: " + e.getMessage());
+        }
     }
 
     /**

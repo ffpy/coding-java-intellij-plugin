@@ -1,7 +1,7 @@
 package org.ffpy.plugin.coding.action.menu;
 
-import cn.hutool.core.lang.Holder;
 import cn.hutool.core.util.StrUtil;
+import com.intellij.openapi.application.WriteAction;
 import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.PsiFile;
 import lombok.Data;
@@ -13,11 +13,13 @@ import org.ffpy.plugin.coding.action.BaseAction;
 import org.ffpy.plugin.coding.constant.CommentPosition;
 import org.ffpy.plugin.coding.constant.TemplateName;
 import org.ffpy.plugin.coding.ui.form.XmlToBeanForm;
-import org.ffpy.plugin.coding.util.*;
+import org.ffpy.plugin.coding.util.CopyPasteUtils;
+import org.ffpy.plugin.coding.util.FileUtils;
+import org.ffpy.plugin.coding.util.MyStringUtils;
+import org.ffpy.plugin.coding.util.StreamUtils;
 
 import java.io.IOException;
 import java.util.*;
-import java.util.concurrent.CountDownLatch;
 import java.util.stream.Collectors;
 
 /**
@@ -37,11 +39,7 @@ public class XmlToBeanAction extends BaseAction implements XmlToBeanForm.Action 
 
     @Override
     public void onOk(Document doc, String packageName, CommentPosition position) {
-        PsiDirectory directory = getDirectory(packageName);
-        if (directory == null) return;
-
-        parseElement(doc.getRootElement(), directory, position);
-
+        parseElement(doc.getRootElement(), getDirectory(packageName), position);
         env.getWriteActions().run();
     }
 
@@ -73,6 +71,9 @@ public class XmlToBeanAction extends BaseAction implements XmlToBeanForm.Action 
             env.getWriteActions().add(() -> {
                 PsiFile psiFile = env.createJavaFile(TemplateName.XML_TO_BEAN, className, params);
                 FileUtils.addIfAbsent(directory, psiFile);
+                if (el.isRootElement()) {
+                    FileUtils.navigateFile(env.getProject(), directory, psiFile.getName());
+                }
             });
 
             return new FieldData(normalFieldName(el.getName()), className, el.getName(), comment);
@@ -113,24 +114,11 @@ public class XmlToBeanAction extends BaseAction implements XmlToBeanForm.Action 
     }
 
     private PsiDirectory getDirectory(String packageName) {
-        Holder<PsiDirectory> directory = new Holder<>();
-        CountDownLatch latch = new CountDownLatch(1);
-
-        new WriteActions(env.getProject()).add(() -> {
-            try {
-                directory.set(env.findOrCreateDirectoryByPackageName(packageName));
-                latch.countDown();
-            } catch (IOException e) {
-                NotificationHelper.error("生成包名失败: {}", e.getMessage());
-            }
-        }).run();
-
         try {
-            latch.await();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+            return WriteAction.computeAndWait(() -> env.findOrCreateDirectoryByPackageName(packageName));
+        } catch (IOException e) {
+            throw new RuntimeException("生成包名失败: " + e.getMessage());
         }
-        return directory.get();
     }
 
     private Optional<String> getCopyText() {
