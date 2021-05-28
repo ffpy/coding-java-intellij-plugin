@@ -5,6 +5,7 @@ import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.EditorFactory;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.fileTypes.FileTypeManager;
+import com.intellij.openapi.project.Project;
 import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
@@ -32,14 +33,14 @@ public class XmlToBeanForm extends JDialog {
     private Action action;
     private com.intellij.openapi.editor.Document document;
 
-    public XmlToBeanForm(@Nullable String text) {
+    public XmlToBeanForm(Project project, @Nullable String text) {
         setTitle("XML转Bean");
 
         setContentPane(contentPane);
         setModal(true);
         getRootPane().setDefaultButton(buttonOK);
 
-        initComponent(text);
+        initComponent(project, text);
 
         if (StringUtils.isNotEmpty(text)) {
             EventQueue.invokeLater(() -> packageName.requestFocus());
@@ -86,11 +87,11 @@ public class XmlToBeanForm extends JDialog {
         this.tip.setText(tip);
     }
 
-    private void initComponent(@Nullable String text) {
+    private void initComponent(Project project, @Nullable String text) {
         FileType fileType = FileTypeManager.getInstance().getFileTypeByExtension("xml");
         EditorFactory factory = EditorFactory.getInstance();
         document = factory.createDocument(text == null ? "" : text);
-        Editor editor = factory.createEditor(document, null, fileType, false);
+        Editor editor = factory.createEditor(document, project, fileType, false);
         textPane.add(editor.getComponent(), BorderLayout.CENTER);
 
         for (CommentPosition position : CommentPosition.values()) {
