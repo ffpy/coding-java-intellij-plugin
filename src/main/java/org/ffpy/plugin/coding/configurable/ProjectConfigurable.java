@@ -33,7 +33,6 @@ public class ProjectConfigurable implements SearchableConfigurable {
     private final ConfigurationForm form;
     private final SettingService settingService;
     private Map<TemplateName, String> templateMap;
-    private String packageName;
     private String translateAppId;
     private String translateSecret;
 
@@ -45,10 +44,6 @@ public class ProjectConfigurable implements SearchableConfigurable {
 
         form = new ConfigurationForm(templateMap);
 
-        if (!ProjectUtils.isDefaultProject(project)) {
-            packageName = settingService.getPackageName();
-        }
-
         translateAppId = settingService.getTranslateAppId();
         translateSecret = settingService.getTranslateSecret();
 
@@ -56,7 +51,6 @@ public class ProjectConfigurable implements SearchableConfigurable {
             if (Messages.showYesNoDialog("确认恢复默认设置？", "提示",
                     "确定", "取消", null) == Messages.YES) {
                 settingService.reset();
-                packageName = settingService.getPackageName();
                 initTemplateMap();
                 reset();
             }
@@ -92,15 +86,13 @@ public class ProjectConfigurable implements SearchableConfigurable {
 
     @Override
     public boolean isModified() {
-        return !form.getPackageNameField().getText().equals(packageName) ||
-                !form.getTemplateMap().equals(templateMap) ||
+        return !form.getTemplateMap().equals(templateMap) ||
                 !form.getTranslateAppIdField().getText().equals(translateAppId) ||
                 !form.getTranslateSecretField().getText().equals(translateSecret);
     }
 
     @Override
     public void apply() throws ConfigurationException {
-        applyPackageName();
         applyTemplate();
         applyTranslateAppId();
         applyTranslateSecret();
@@ -110,21 +102,6 @@ public class ProjectConfigurable implements SearchableConfigurable {
         Map<TemplateName, String> templateMap = form.getTemplateMap();
         templateMap.forEach(settingService::setTemplate);
         this.templateMap = templateMap;
-    }
-
-    private void applyPackageName() throws ConfigurationException {
-        String packageName = form.getPackageNameField().getText();
-        if (!PatternUtils.matchPackageName(packageName)) {
-            throw new ConfigurationException("包名格式不正确");
-        }
-
-        settingService.setPackageName(packageName);
-
-        if (StringUtils.isEmpty(packageName)) {
-            form.getPackageNameField().setText(settingService.getPackageName());
-        }
-
-        this.packageName = form.getPackageNameField().getText();
     }
 
     private void applyTranslateAppId() {
@@ -141,7 +118,6 @@ public class ProjectConfigurable implements SearchableConfigurable {
 
     @Override
     public void reset() {
-        form.getPackageNameField().setText(packageName);
         form.setTemplateMap(templateMap);
         form.getTranslateAppIdField().setText(translateAppId);
         form.getTranslateSecretField().setText(translateSecret);

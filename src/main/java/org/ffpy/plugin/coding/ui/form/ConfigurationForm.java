@@ -24,9 +24,6 @@ public class ConfigurationForm implements BaseForm {
     @Getter
     private JPanel mainPanel;
 
-    @Getter
-    private JTextField packageNameField;
-
     private JTabbedPane tabPane;
 
     private JButton resetButton;

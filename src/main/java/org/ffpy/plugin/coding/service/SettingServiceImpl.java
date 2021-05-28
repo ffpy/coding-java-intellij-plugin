@@ -4,16 +4,13 @@ import com.intellij.ide.util.PropertiesComponent;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.io.FileUtil;
 import com.sun.istack.Nullable;
-import org.apache.commons.lang3.StringUtils;
 import org.ffpy.plugin.coding.constant.TemplateName;
-import org.ffpy.plugin.coding.util.NotificationHelper;
 
 import java.io.IOException;
 import java.util.Arrays;
 
 public class SettingServiceImpl implements SettingService {
 
-    private static final String KEY_PACKAGE_NAME = "package_name";
     private static final String KEY_TEMPLATE = "template_";
     private static final String KEY_TRANSLATE_APP_ID = "translate_app_id";
     private static final String KEY_TRANSLATE_SECRET = "translate_secret";
@@ -26,24 +23,6 @@ public class SettingServiceImpl implements SettingService {
         mProject = project;
         projectProperties = PropertiesComponent.getInstance(mProject);
         applicationProperties = PropertiesComponent.getInstance();
-    }
-
-    @Override
-    public String getPackageName() {
-        String packageName = projectProperties.getValue(KEY_PACKAGE_NAME);
-//        if (StringUtils.isBlank(packageName)) {
-//            NotificationHelper.error("请设置包名").show();
-//        }
-        return packageName;
-    }
-
-    @Override
-    public void setPackageName(@Nullable String packageName) {
-        if (StringUtils.isEmpty(packageName)) {
-            projectProperties.unsetValue(KEY_PACKAGE_NAME);
-        } else {
-            projectProperties.setValue(KEY_PACKAGE_NAME, packageName);
-        }
     }
 
     @Override
@@ -90,7 +69,6 @@ public class SettingServiceImpl implements SettingService {
 
     @Override
     public void reset() {
-        setPackageName(null);
         Arrays.stream(TemplateName.values())
                 .forEach(name -> setTemplate(name, null));
     }

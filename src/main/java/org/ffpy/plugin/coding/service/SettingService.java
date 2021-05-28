@@ -5,10 +5,6 @@ import org.ffpy.plugin.coding.constant.TemplateName;
 
 public interface SettingService {
 
-    String getPackageName();
-
-    void setPackageName(@Nullable String packageName);
-
     String getTranslateAppId();
 
     void setTranslateAppId(String appId);

@@ -134,11 +134,6 @@ public interface ActionEnv {
     TranslateHelper getTranslateHelper();
 
     /**
-     * 获取包目录/src/main/java/com.xxx
-     */
-    Optional<VirtualFile> getPackageFile();
-
-    /**
      * 获取或创建包目录
      *
      * @param packageName 包名

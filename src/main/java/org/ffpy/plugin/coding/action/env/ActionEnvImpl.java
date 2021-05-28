@@ -165,15 +165,6 @@ public class ActionEnvImpl implements ActionEnv {
     }
 
     @Override
-    public Optional<VirtualFile> getPackageFile() {
-        String packageName = self.getSettingService().getPackageName();
-        if (StringUtils.isBlank(packageName)) return Optional.empty();
-
-        return Optional.ofNullable(self.getProjectRootFile()
-                .findFileByRelativePath("src/main/java/" + packageName.replace('.', '/')));
-    }
-
-    @Override
     public PsiDirectory findOrCreateDirectoryByPackageName(String packageName) throws IOException {
         VirtualFile file = self.getProjectRootFile().findFileByRelativePath("src/main/java/");
         if (file == null) return null;
