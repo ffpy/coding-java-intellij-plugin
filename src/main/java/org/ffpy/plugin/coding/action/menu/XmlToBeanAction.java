@@ -43,23 +43,36 @@ public class XmlToBeanAction extends BaseAction implements XmlToBeanForm.Action 
         env.getWriteActions().run();
     }
 
+    /**
+     * 遍历处理标签，深度优先搜索
+     *
+     * @param el        当前处理的标签
+     * @param directory 生成文件的文件夹
+     * @param position  注释位置
+     * @return 标签对应的字段信息
+     */
     private FieldData parseElement(Element el, PsiDirectory directory, CommentPosition position) {
         String comment = el.isRootElement() ? null : getComment(el, position);
 
+        // 叶子标签
         if (el.isTextOnly()) {
             return new FieldData(normalFieldName(el.getName()), "String", el.getName(), comment);
-        } else {
+        }
+        // 子标签
+        else {
             String className = normalClassName(el.getName());
 
             List<Element> elements = el.elements();
             Set<String> listElements = getListElements(elements);
 
+            // 收集当前标签的子标签
             List<FieldData> fields = elements.stream()
                     .filter(StreamUtils.distinct(Node::getName))
                     .map(e -> parseElement(e, directory, position))
                     .map(field -> processList(listElements, field))
                     .collect(Collectors.toList());
 
+            // 模板参数
             Map<String, Object> params = new HashMap<>(8);
             params.put("className", className);
             params.put("elementName", el.getName());
@@ -71,6 +84,7 @@ public class XmlToBeanAction extends BaseAction implements XmlToBeanForm.Action 
             env.getWriteActions().add(() -> {
                 PsiFile psiFile = env.createJavaFile(TemplateName.XML_TO_BEAN, className, params);
                 FileUtils.addIfAbsent(directory, psiFile);
+
                 if (el.isRootElement()) {
                     FileUtils.navigateFile(env.getProject(), directory, psiFile.getName());
                 }
@@ -80,11 +94,19 @@ public class XmlToBeanAction extends BaseAction implements XmlToBeanForm.Action 
         }
     }
 
+    /**
+     * 处理List字段
+     *
+     * @param listElements List类型的标签名集合
+     * @param field        要处理的字段
+     * @return 直接返回field参数
+     */
     private FieldData processList(Set<String> listElements, FieldData field) {
         field.setIsList(listElements.contains(field.getElementName()));
         if (field.getIsList()) {
             field.setType(StrUtil.format("List<{}>", field.getType()));
 
+            // List类型字段的字段名
             if (field.getName().endsWith("s")) {
                 field.setName(field.getName() + "List");
             } else {
@@ -109,10 +131,23 @@ public class XmlToBeanAction extends BaseAction implements XmlToBeanForm.Action 
         return elementCounter.keySet();
     }
 
+    /**
+     * 获取当前标签的注释
+     *
+     * @param el       标签
+     * @param position 注释位置
+     * @return 注释，如果没有则返回null
+     */
     private String getComment(Element el, CommentPosition position) {
         return position.findComment(el).map(Node::getText).orElse(null);
     }
 
+    /**
+     * 获取要生成文件的目录
+     *
+     * @param packageName 包名
+     * @return 目录
+     */
     private PsiDirectory getDirectory(String packageName) {
         try {
             return WriteAction.computeAndWait(() -> env.findOrCreateDirectoryByPackageName(packageName));
@@ -121,10 +156,21 @@ public class XmlToBeanAction extends BaseAction implements XmlToBeanForm.Action 
         }
     }
 
+    /**
+     * 获取当前剪切板的内容
+     *
+     * @return 当前剪切板的内容
+     */
     private Optional<String> getCopyText() {
         return CopyPasteUtils.getString().filter(it -> it.startsWith("<"));
     }
 
+    /**
+     * 标签名转字段名
+     *
+     * @param name 标签名
+     * @return 字段名
+     */
     private String normalFieldName(String name) {
         if (name.length() < 2) return name.toLowerCase();
 
@@ -132,6 +178,12 @@ public class XmlToBeanAction extends BaseAction implements XmlToBeanForm.Action 
         return name.substring(0, 1).toLowerCase() + name.substring(1);
     }
 
+    /**
+     * 标签名转类名
+     *
+     * @param name 标签名
+     * @return 类名
+     */
     private String normalClassName(String name) {
         if (name.length() < 2) return name.toLowerCase();
 
@@ -139,6 +191,9 @@ public class XmlToBeanAction extends BaseAction implements XmlToBeanForm.Action 
         return name.substring(0, 1).toUpperCase() + name.substring(1);
     }
 
+    /**
+     * 字段信息
+     */
     @Data
     public static class FieldData {
         /** 字段名 */
