@@ -1,77 +1,43 @@
 plugins {
     id 'java'
-    id 'org.jetbrains.intellij' version '0.4.9'
-//    id 'org.springframework.boot' version '2.4.0'
-//    id 'io.spring.dependency-management' version '1.0.10.RELEASE'
+    id 'org.jetbrains.intellij' version '1.0'
+    id 'org.jetbrains.kotlin.jvm' version '1.4.21'
 }
-
-def ideaVersionExternalDefinition = System.getenv("IDEA_VERSION")
-def ideaVersion = ideaVersionExternalDefinition ? ideaVersionExternalDefinition : ideaVersion
 
 group = pluginGroup
 version = pluginVersion
-
-sourceCompatibility = JavaVersion.VERSION_1_8
-targetCompatibility = JavaVersion.VERSION_1_8
-
-compileJava {
-    options.compilerArgs << '-parameters'
-}
-
-compileTestJava {
-    options.compilerArgs << '-parameters'
-}
-
-tasks.withType(JavaCompile) {
-    options.encoding = 'UTF-8'
-}
-
-configurations {
-    compileOnly {
-        extendsFrom annotationProcessor
-    }
-}
 
 repositories {
     maven { url 'https://maven.aliyun.com/repository/public/' }
     mavenCentral()
 }
 
+compileKotlin {
+    kotlinOptions.jvmTarget = "1.8"
+}
+
+compileTestKotlin {
+    kotlinOptions.jvmTarget = "1.8"
+}
+
+// See https://github.com/JetBrains/gradle-intellij-plugin/
 intellij {
-    version ideaVersion
-    println "Building for IntelliJ version: ${version}"
+    version = ideaVersion
+    plugins = ['java']
+    pluginName = this.pluginName
 
-    pluginName pluginName
-    updateSinceUntilBuild true
-    sameSinceUntilBuild false
-    sandboxDirectory = "${rootProject.projectDir}/idea-sandbox/idea-${ideaVersion}"
-
-    plugins 'java'
+    println "Building for IntelliJ version: ${ideaVersion}"
 }
 
 patchPluginXml {
-    version pluginVersion
-    pluginDescription(file(descriptionFile).text)
-    changeNotes(file(changesFile).text)
-}
-
-ext {
-    springBootVersion = '2.3.5.RELEASE'
-    lombokVersion = '1.18.4'
+    version = pluginVersion
+    pluginDescription = file(descriptionFile).text
+    changeNotes = file(changesFile).text
 }
 
 dependencies {
-    // lib
-    compile fileTree(dir: 'lib', includes: ['*.jar'])
-
-    // Spring Boot
-    implementation "org.springframework.boot:spring-boot-starter:${springBootVersion}"
-
-    // Lombok
-    compileOnly "org.projectlombok:lombok:${lombokVersion}"
-    annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
-    testCompileOnly "org.projectlombok:lombok:${lombokVersion}"
-    testAnnotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+    // Kotlin
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
 
     // Commons
     implementation group: 'commons-beanutils', name: 'commons-beanutils', version: '1.9.3'
@@ -79,18 +45,23 @@ dependencies {
 
     // Hutool
     implementation group: 'cn.hutool', name: 'hutool-core', version: '5.6.6'
+    implementation group: 'cn.hutool', name: 'hutool-http',  version: '5.6.6'
 
     // Json
     implementation group: 'org.json', name: 'json', version: '20190722'
 
     // Dom4j
-    implementation group: 'org.dom4j', name: 'dom4j', version: '2.1.3'
+    implementation('org.dom4j:dom4j:2.1.3') {
+        exclude group:'pull-parser'
+    }
     implementation group: 'jaxen', name: 'jaxen', version: '1.2.0'
+
+    // Logback
+    implementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.3'
 
     // Extra
     implementation group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.2'
 
     // Test
-    testImplementation group: 'junit', name: 'junit', version: '4.12'
-    testImplementation "org.springframework.boot:spring-boot-starter-test:${springBootVersion}"
+    testCompile group: 'junit', name: 'junit', version: '4.12'
 }

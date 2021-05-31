@@ -6,7 +6,6 @@ import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.EditorFactory;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.fileTypes.FileTypeManager;
-import lombok.Getter;
 import org.ffpy.plugin.coding.constant.TemplateName;
 import org.ffpy.plugin.coding.ui.BaseForm;
 
@@ -21,22 +20,32 @@ import java.util.stream.Collectors;
 
 public class ConfigurationForm implements BaseForm {
 
-    @Getter
     private JPanel mainPanel;
 
     private JTabbedPane tabPane;
 
     private JButton resetButton;
 
-    @Getter
     private JTextField translateAppIdField;
 
-    @Getter
     private JTextField translateSecretField;
 
     private Map<TemplateName, Editor> editorMap = new HashMap<>();
 
     private EditorFactory editorFactory;
+
+    @Override
+    public JPanel getMainPanel() {
+        return mainPanel;
+    }
+
+    public JTextField getTranslateSecretField() {
+        return translateSecretField;
+    }
+
+    public JTextField getTranslateAppIdField() {
+        return translateAppIdField;
+    }
 
     /**
      * @param templateMap TreeMap实例
@@ -61,7 +70,7 @@ public class ConfigurationForm implements BaseForm {
             Document document = factory.createDocument(entry.getValue().replace("\r\n", "\n"));
             Editor editor = factory.createEditor(document, null, fileType, false);
             editorMap.put(entry.getKey(), editor);
-            tabPane.addTab(entry.getKey().getName(), editor.getComponent());
+            tabPane.addTab(entry.getKey().getFileName(), editor.getComponent());
         });
     }
 

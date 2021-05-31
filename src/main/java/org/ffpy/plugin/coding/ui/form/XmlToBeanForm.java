@@ -30,7 +30,7 @@ public class XmlToBeanForm extends JDialog {
     private JLabel tip;
     private JPanel textPane;
 
-    private Action action;
+    private XmlToBeanFormAction action;
     private com.intellij.openapi.editor.Document document;
 
     public XmlToBeanForm(Project project, @Nullable String text) {
@@ -63,7 +63,7 @@ public class XmlToBeanForm extends JDialog {
                 JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
     }
 
-    public void setAction(Action action) {
+    public void setAction(XmlToBeanFormAction action) {
         this.action = action;
     }
 
@@ -95,7 +95,7 @@ public class XmlToBeanForm extends JDialog {
         textPane.add(editor.getComponent(), BorderLayout.CENTER);
 
         for (CommentPosition position : CommentPosition.values()) {
-            commentPosition.addItem(position.getName());
+            commentPosition.addItem(position.getText());
         }
 
         new InputLimit(packageName, Constant.PATTERN_PACKAGE_NAME);
@@ -134,17 +134,6 @@ public class XmlToBeanForm extends JDialog {
 
     private void createUIComponents() {
         // TODO: place custom component creation code here
-    }
-
-    public interface Action {
-        /**
-         * 按下了确定按钮
-         *
-         * @param doc         XML文档
-         * @param packageName 包名
-         * @param position    注释位置
-         */
-        void onOk(Document doc, String packageName, CommentPosition position);
     }
 
 }
